@@ -103,11 +103,13 @@ public class BatteryService extends Service {
                     stopCharge = reachMaxLevel;
                 } else {
                     if (preferences.getBoolean("stopOnLevel", false) && (Battery.Level >= maxLevel)) {
-                        stopCharge = true;
+                        reachMaxLevel = true;
                         newLog = "condition: " + Battery.Plugged.toLowerCase() +
                                 " + level >= " + Integer.toString(maxLevel) +
                                 "% = not allowed to charging";
                     }
+
+                    stopCharge = reachMaxLevel;
                 }
                 if (preferences.getBoolean("stopOnOver", false) && Battery.Health.contains("Over")) {
                     stopCharge = true;
