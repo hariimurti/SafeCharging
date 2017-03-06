@@ -38,7 +38,6 @@ public class BatteryService extends Service {
             this.context = this;
             isRunning = true;
             reachMaxLevel = false;
-            lastLog = "";
 
             backgroundService = new Handler();
             backgroundService.postDelayed(runnableService, timer);
@@ -75,7 +74,7 @@ public class BatteryService extends Service {
         @Override
         public void run() {
             boolean stopCharge = false;
-            String newLog = "";
+            String newLog = null;
 
             BatteryStatus Battery = new BatteryStatus(context);
             if (lastLevel != Battery.Level) {
@@ -117,7 +116,7 @@ public class BatteryService extends Service {
                             "% = not allowed to charging";
                 }
 
-                if (lastLog != newLog) {
+                if ((lastLog != newLog) && (newLog != null)) {
                     Log.i(MainActivity.TAG, "BatteryService: " + newLog);
                 }
 
