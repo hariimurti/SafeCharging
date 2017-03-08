@@ -17,7 +17,7 @@ public class BatteryService extends Service {
     private Handler backgroundService;
     private Context context;
     private boolean isRunning;
-    private boolean stopCharge;
+    private boolean setCharging;
     private int timer = 1000;
     private int lastLevel = 0;
     private int logId = 0;
@@ -35,25 +35,23 @@ public class BatteryService extends Service {
         if (!isRunning) {
             this.context = this;
             isRunning = true;
-            stopCharge = false;
+            setCharging = true;
 
             backgroundService = new Handler();
             backgroundService.postDelayed(runnableService, timer);
 
-            /*Toast toast = Toast.makeText(this, R.string.toast_monitor, Toast.LENGTH_SHORT);
-            toast.setGravity(Gravity.CENTER, 0, 0);
-            toast.show();*/
             Notifications.Show(context, 0, "Battery Service", getString(R.string.notif_startmonitor), false);
             Log.i(MainActivity.TAG, "BatteryService: starting service & monitor charging");
-            /*Log.i(MainActivity.TAG, "BatteryService: stopOnLevel: " + Boolean.toString(preferences.getBoolean("stopOnLevel", false))
-                    + ", maxLevel: " + Integer.toString(preferences.getInt("maxLevel", 90))
-                    + "%, stopOnUsb: " + Boolean.toString(preferences.getBoolean("stopOnUsb", false))
-                    + ", minLevel: " + Integer.toString(preferences.getInt("minLevel", 60))
-                    + ", stopOnOver: " + Boolean.toString(preferences.getBoolean("stopOnOver", false)));*/
+            /*Log.i(MainActivity.TAG, "BatteryService: stopOnLevel: " +
+                    Boolean.toString(preferences.getBoolean("stopOnLevel", false)) +
+                    ", maxLevel: " + Integer.toString(preferences.getInt("maxLevel", 90)) +
+                    "%, stopOnUsb: " + Boolean.toString(preferences.getBoolean("stopOnUsb", false)) +
+                    ", minLevel: " + Integer.toString(preferences.getInt("minLevel", 60)) +
+                    ", stopOnOver: " + Boolean.toString(preferences.getBoolean("stopOnOver", false)));*/
         }
-        if (!preferences.getBoolean("stopOnUsb", false)
-                && !preferences.getBoolean("stopOnLevel", false)
-                && !preferences.getBoolean("stopOnOver", false)) {
+        if (!preferences.getBoolean("stopOnUsb", false) &&
+                !preferences.getBoolean("stopOnLevel", false) &&
+                !preferences.getBoolean("stopOnOver", false)) {
             this.stopSelf();
         }
         return START_STICKY;
@@ -66,8 +64,7 @@ public class BatteryService extends Service {
         //Toast.makeText(this, "SafeCharging service is stopped!, Toast.LENGTH_SHORT).show();
         Notifications.Close(context, 0);
         Log.i(MainActivity.TAG, "BatteryService: stop service & reset charging to enable");
-        if (!Charging.isEnabled())
-            Charging.setEnabled(true);
+        Charging.setEnabled(true);
     }
 
     private Runnable runnableService = new Runnable() {
@@ -85,7 +82,7 @@ public class BatteryService extends Service {
 
                 if (preferences.getBoolean("stopOnUsb", false) && Battery.Plugged.contains("USB")) {
                     if (Battery.Level <= minLevel) {
-                        stopCharge = false;
+                        setCharging = true;
                         if (logId != 1) {
                             Notifications.Show(context, 0, context.getString(R.string.notif_startcharging),
                                     context.getString(R.string.notif_minlevel), false);
@@ -96,7 +93,7 @@ public class BatteryService extends Service {
                     }
 
                     if (Battery.Level >= maxLevel) {
-                        stopCharge = true;
+                        setCharging = false;
                         if (logId != 2) {
                             Notifications.Show(context, 0, context.getString(R.string.notif_stopcharging),
                                     context.getString(R.string.notif_maxlevel), true);
@@ -107,7 +104,7 @@ public class BatteryService extends Service {
                     }
                 } else if (preferences.getBoolean("stopOnLevel", false)) {
                     if (Battery.Level <= 10) {
-                        stopCharge = false;
+                        setCharging = true;
                         if (logId != 3) {
                             Notifications.Show(context, 0, context.getString(R.string.notif_startcharging),
                                     context.getString(R.string.notif_minlevel), false);
@@ -118,7 +115,7 @@ public class BatteryService extends Service {
                     }
 
                     if (Battery.Level >= maxLevel) {
-                        stopCharge = true;
+                        setCharging = false;
                         if (logId != 4) {
                             Notifications.Show(context, 0, context.getString(R.string.notif_stopcharging),
                                     context.getString(R.string.notif_maxlevel), true);
@@ -131,18 +128,8 @@ public class BatteryService extends Service {
                     }
                 }
 
-                if (stopCharge) {
-                    if (Charging.isEnabled()) {
-                        //Log.i(MainActivity.TAG, "BatteryService: set charging false");
-                        Charging.setEnabled(false);
-                    }
-                } else {
-                    if (!Charging.isEnabled()) {
-                    /*Log.i(MainActivity.TAG, "BatteryService: no valid condition: " +
-                                    "set charging true");*/
-                        Charging.setEnabled(true);
-                    }
-                }
+                //Log.i(MainActivity.TAG, "BatteryService: set charging " + Boolean.toString(setCharging));
+                Charging.setEnabled(setCharging);
             }
 
             if (preferences.getBoolean("stopOnOver", false) && Battery.Health.contains("Over")) {

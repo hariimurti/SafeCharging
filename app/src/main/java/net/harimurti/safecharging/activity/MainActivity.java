@@ -203,14 +203,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if (isServiceRunning(BatteryService.class)) {
                 context.stopService(new Intent(context, BatteryService.class));
             }
-            boolean reset = false;
-            if (!Charging.isEnabled())
-                reset = Charging.setEnabled(true);
-            if (reset) {
-                Toast toast = Toast.makeText(this, R.string.toast_reset, Toast.LENGTH_SHORT);
-                toast.setGravity(Gravity.CENTER, 0, 0);
-                toast.show();
-            }
+
+            Charging.setEnabled(true);
+
+            Toast toast = Toast.makeText(this, R.string.toast_reset, Toast.LENGTH_SHORT);
+            toast.setGravity(Gravity.CENTER, 0, 0);
+            toast.show();
+
             return true;
         } else if (id == R.id.action_about) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);

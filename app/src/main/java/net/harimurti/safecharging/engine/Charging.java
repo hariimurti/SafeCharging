@@ -46,31 +46,26 @@ public class Charging {
         return retval.contains("1");
     }
 
-    public static boolean setEnabled(Boolean enabled) {
-        boolean retval = false;
-        //executeCommand("chmod 777 " + pathFile);
-
+    public static void setEnabled(Boolean enabled) {
         if (enabled) {
-            executeCommand("echo 1 > " + pathFile);
-            if (isEnabled()) {
-                Log.i(MainActivity.TAG, "Charging: Enable (Normal)");
-                retval = true;
+            if (!isEnabled()) {
+                executeCommand("echo 1 > " + pathFile);
+                if (isEnabled()) {
+                    Log.i(MainActivity.TAG, "Charging: Enable (Normal)");
+                } else {
+                    Log.e(MainActivity.TAG, "Charging: Can't modified value!");
+                }
             }
         } else {
-            executeCommand("echo 0 > " + pathFile);
-            if (!isEnabled()) {
-                Log.i(MainActivity.TAG, "Charging: Disable (Stop)");
-                retval = true;
+            if (isEnabled()) {
+                executeCommand("echo 0 > " + pathFile);
+                if (!isEnabled()) {
+                    Log.i(MainActivity.TAG, "Charging: Disable (Stop)");
+                } else {
+                    Log.e(MainActivity.TAG, "Charging: Can't modified value!");
+                }
             }
         }
-
-        //executeCommand("chmod 644 " + pathFile);
-        //executeCommand("restorecon -F " + pathFile);
-
-        if (!retval)
-            Log.e(MainActivity.TAG, "Can't modified value!");
-
-        return retval;
     }
 
     private static void executeCommand(String cmd) {
@@ -82,7 +77,6 @@ public class Charging {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            //Log.i("Execute", cmd);
         } catch (TimeoutException | RootDeniedException | IOException e) {
             Log.e(MainActivity.TAG, "RootShell: " + e.getMessage());
         }
