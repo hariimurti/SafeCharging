@@ -2,6 +2,9 @@ package net.harimurti.safecharging.engine;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -189,6 +192,38 @@ public class CustomDialog {
         dialogMaxWindow(dialog);
     }
 
+    public static void showDialogAbout(final Context context) {
+        final Dialog dialog = new Dialog(context);
+        dialog.setContentView(R.layout.dialog_about);
+        dialog.setTitle("About");
+
+        TextView labelApp = (TextView) dialog.findViewById(R.id.textView26);
+        labelApp.setText(context.getString(R.string.app_name) + " v" + getVersion(context));
+
+        Button dialogVisit = (Button) dialog.findViewById(R.id.button5);
+        Button dialogCancel = (Button) dialog.findViewById(R.id.button6);
+
+        dialogVisit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent openWebsite = new Intent(Intent.ACTION_VIEW);
+                openWebsite.setData(Uri.parse("http://harimurti.net"));
+                context.startActivity(openWebsite);
+                dialog.dismiss();
+            }
+        });
+
+        dialogCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+        dialogMaxWindow(dialog);
+    }
+
     private static void dialogMaxWindow(Dialog dialog) {
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
         Window window = dialog.getWindow();
@@ -196,5 +231,15 @@ public class CustomDialog {
         lp.width = WindowManager.LayoutParams.MATCH_PARENT;
         lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
         window.setAttributes(lp);
+    }
+
+    public static String getVersion(Context context) {
+        String v = "1.x";
+        try {
+            v = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return v;
     }
 }

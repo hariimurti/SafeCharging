@@ -36,16 +36,19 @@
     <string name="toast_monitor">SafeCharging: Monitor is Started!</string>
     <string name="toast_reset">SafeCharging: Reset Charging!</string>
     <string name="notif_maxlevel">Reach Max Level! Re-plug to Charging again.</string>
-    <string name="notif_minlevel">Below Min Level...</string>
+    <string name="notif_minlevel">Below Min Level&#8230;</string>
     <string name="notif_usb_disable">USB Source is forbidden!</string>
-    <string name="notif_startcharging">Start Charging...</string>
+    <string name="notif_startcharging">Start Charging&#8230;</string>
     <string name="notif_stopcharging">Stop Charging!</string>
     <string name="notif_startmonitor">Monitor is Started!</string>
-    <string name="please_visit">Website http://harimurti.net\nvisit right now?</string>
-    <string name="ok">Ok</string>
+    <string name="about">Satu lagi project hasil menjiplak ide dari sebuah trit xda. Dimana aplikasi ini berfungsi untuk menghentikan arus charging, bila memenuhi suatu kondisi tertentu. Mohon maaf bila ada typo maupun &#8230; ah syudah lah.</string>
+    <string name="website">Website http://harimurti.net</string>
+    <string name="ok">OK</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="cancel">Cancel</string>
     <string name="save">Save</string>
     <string name="change">Change</string>
+    <string name="close">Close</string>
+    <string name="visit">Visit</string>
 </resources>

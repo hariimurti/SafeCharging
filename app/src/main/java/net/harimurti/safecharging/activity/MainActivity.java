@@ -2,13 +2,9 @@ package net.harimurti.safecharging.activity;
 
 import android.app.ActivityManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.View;
@@ -157,25 +153,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
             return true;
         } else if (id == R.id.action_about) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage(R.string.please_visit)
-                    .setTitle(getString(R.string.app_name) + " v" + getVersion());
-
-            builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    Intent i = new Intent(Intent.ACTION_VIEW);
-                    i.setData(Uri.parse("http://harimurti.net"));
-                    startActivity(i);
-                }
-            });
-            builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    // User cancelled the dialog
-                }
-            });
-
-            AlertDialog dialog = builder.create();
-            dialog.show();
+            CustomDialog.showDialogAbout(context);
             return true;
         } else if (id == R.id.action_exit) {
             this.finish();
@@ -264,15 +242,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
         return false;
-    }
-
-    public String getVersion() {
-        String v = "1.0";
-        try {
-            v = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        return v;
     }
 }
