@@ -3,8 +3,6 @@ package net.harimurti.safecharging.engine;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import net.harimurti.safecharging.activity.MainActivity;
@@ -19,20 +17,12 @@ public class PowerReceiver extends BroadcastReceiver {
 
         BatteryStatus Battery = new BatteryStatus(context);
         String source = Battery.Plugged;
-        Log.i(MainActivity.TAG, "PowerReceiver: " + source);
 
-        Intent background = new Intent(context, BatteryService.class);
-        if (Charging.isSupported()) {
-            if (!source.contains("Unknown")) {
-                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-                if (preferences.getBoolean("stopOnUsb", false)
-                        || preferences.getBoolean("stopOnLevel", false)
-                        || preferences.getBoolean("stopOnOver", false)) {
-                    context.startService(background);
-                }
-            } else {
-                context.stopService(background);
-            }
+        if (!source.contains("Unknown")) {
+            Log.i(MainActivity.TAG, "PowerReceiver: " + source);
+            PreService.Start(context);
+        } else {
+            PreService.Stop(context);
         }
     }
 }

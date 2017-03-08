@@ -44,11 +44,7 @@ public class BatteryService extends Service {
                     ", minLevel: " + Integer.toString(preferences.getInt("minLevel", 60)) +
                     ", stopOnOver: " + Boolean.toString(preferences.getBoolean("stopOnOver", false)));*/
         }
-        ConfigManager config = new ConfigManager(this);
-        if (!Charging.isSupported() || !config.getBoolean("stopOnUsb") &&
-                !config.getBoolean("stopOnLevel") && !config.getBoolean("stopOnOver")) {
-            this.stopSelf();
-        }
+
         return START_STICKY;
     }
 
@@ -150,10 +146,16 @@ public class BatteryService extends Service {
 
             lastLevel = Battery.Level;
 
+            if (!config.getBoolean("stopOnUsb") &&
+                    !config.getBoolean("stopOnLevel") &&
+                    !config.getBoolean("stopOnOver")) {
+                Log.i(MainActivity.TAG, "BatteryService: kill service, " +
+                        "because none of condition is set on");
+                stopSelf();
+            }
+
             if (isRunning) {
                 backgroundService.postDelayed(this, 1000);
-            } else {
-                stopSelf();
             }
         }
     };

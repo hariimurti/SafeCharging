@@ -1,8 +1,6 @@
 package net.harimurti.safecharging.activity;
 
-import android.app.ActivityManager;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -78,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             backgroundUpdate = new Handler();
             backgroundUpdate.post(runnableUpdate);
         }
-        serviceManager();
+        PreService.Start(context);
     }
 
     @Override
@@ -110,7 +108,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 CustomDialog.showDialogMinMax(context);
                 break;
         }
-        serviceManager();
+
+        if (isSupported && (swOverLevel.isChecked() || swUsbPower.isChecked() || swOverAll.isChecked())) {
+            PreService.Start(context);
+        } else {
+            PreService.Stop(context);
+        }
     }
 
     @Override
@@ -125,14 +128,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         if (id == R.id.action_restart) {
             if (isSupported && (swOverLevel.isChecked() || swUsbPower.isChecked() || swOverAll.isChecked())) {
-                BatteryStatus Battery = new BatteryStatus(context);
-                String source = Battery.Plugged;
-                if (!source.contains("Unknown")) {
-                    Intent service = new Intent(context, BatteryService.class);
-                    if (isServiceRunning(BatteryService.class))
-                        context.stopService(service);
-                    context.startService(service);
-                }
+                PreService.Restart(context);
             } else {
                 Toast toast = Toast.makeText(this, R.string.toast_nomonitor, Toast.LENGTH_SHORT);
                 toast.setGravity(Gravity.CENTER, 0, 0);
@@ -141,10 +137,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return true;
         } else if (id == R.id.action_reset) {
             if (isSupported) {
-                if (isServiceRunning(BatteryService.class)) {
-                    context.stopService(new Intent(context, BatteryService.class));
-                }
-
+                PreService.Stop(context);
                 Charging.setEnabled(true);
 
                 Toast toast = Toast.makeText(this, R.string.toast_reset, Toast.LENGTH_SHORT);
@@ -193,7 +186,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 lbStatus.setText(Battery.Status);
 
             if (isSupported) {
-                if (isServiceRunning(BatteryService.class)) {
+                if (PreService.isServiceRunning(context)) {
                     lbService.setText(R.string.label_monitor);
                 } else {
                     lbService.setText(R.string.label_notrunning);
@@ -216,31 +209,4 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if (isRunningUpdate) backgroundUpdate.postDelayed(this, 1000);
         }
     };
-
-    private void serviceManager() {
-        BatteryStatus Battery = new BatteryStatus(context);
-        if (isSupported && !Battery.Plugged.contains("Unknown")) {
-            if (config.getBoolean("stopOnUsb") ||
-                    config.getBoolean("stopOnLevel") ||
-                    config.getBoolean("stopOnOver")) {
-                if (!isServiceRunning(BatteryService.class)) {
-                    context.startService(new Intent(context, BatteryService.class));
-                }
-            } else {
-                context.stopService(new Intent(context, BatteryService.class));
-            }
-        } else {
-            context.stopService(new Intent(context, BatteryService.class));
-        }
-    }
-
-    private boolean isServiceRunning(Class<?> serviceClass) {
-        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (serviceClass.getName().equals(service.service.getClassName())) {
-                return true;
-            }
-        }
-        return false;
-    }
 }
