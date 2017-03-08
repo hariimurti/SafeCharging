@@ -79,8 +79,8 @@ public class BatteryService extends Service {
                         if (Battery.Level <= minLevel) {
                             setCharging = true;
                             if (logId != 1) {
-                                Notifications.Show(context, 0, context.getString(R.string.notif_startcharging),
-                                        context.getString(R.string.notif_minlevel), false);
+                                /*Notifications.Show(context, 0, context.getString(R.string.notif_startcharging),
+                                        context.getString(R.string.notif_minlevel), false);*/
                                 Log.i(MainActivity.TAG, "BatteryService: condition: usb source + level <= "
                                         + Integer.toString(minLevel) + "% = allowed to charging");
                                 logId = 1;
@@ -90,8 +90,8 @@ public class BatteryService extends Service {
                         if (Battery.Level >= maxLevel) {
                             setCharging = false;
                             if (logId != 2) {
-                                Notifications.Show(context, 0, context.getString(R.string.notif_stopcharging),
-                                        context.getString(R.string.notif_maxlevel), true);
+                                Notifications.Show(context, 0, context.getString(R.string.notif_maxlevel),
+                                        context.getString(R.string.notif_replug), true);
                                 Log.i(MainActivity.TAG, "BatteryService: condition: usb source + level >= " +
                                         Integer.toString(maxLevel) + "% = not allowed to charging");
                                 logId = 2;
@@ -111,8 +111,8 @@ public class BatteryService extends Service {
                     if (Battery.Level <= 10) {
                         setCharging = true;
                         if (logId != 4) {
-                            Notifications.Show(context, 0, context.getString(R.string.notif_startcharging),
-                                    context.getString(R.string.notif_minlevel), false);
+                            /*Notifications.Show(context, 0, context.getString(R.string.notif_startcharging),
+                                    context.getString(R.string.notif_minlevel), false);*/
                             Log.i(MainActivity.TAG, "BatteryService: condition: " +
                                     " + level <= 10% = allowed to charging");
                             logId = 4;
@@ -122,8 +122,8 @@ public class BatteryService extends Service {
                     if (Battery.Level >= maxLevel) {
                         setCharging = false;
                         if (logId != 5) {
-                            Notifications.Show(context, 0, context.getString(R.string.notif_stopcharging),
-                                    context.getString(R.string.notif_maxlevel), true);
+                            Notifications.Show(context, 0, context.getString(R.string.notif_maxlevel),
+                                    context.getString(R.string.notif_replug), true);
                             Log.i(MainActivity.TAG, "BatteryService: condition: " +
                                     Battery.Plugged.toLowerCase() +
                                     " + level >= " + Integer.toString(maxLevel) +
