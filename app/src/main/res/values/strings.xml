@@ -34,4 +34,9 @@
     <string name="toast_nomonitor">No Conditions is Monitored!</string>
     <string name="toast_monitor">SafeCharging: Monitor is Started!</string>
     <string name="toast_reset">SafeCharging: Reset Charging!</string>
+    <string name="notif_maxlevel">Reach Max Level! Re-plug to Charging again.</string>
+    <string name="notif_minlevel">Below Min Level...</string>
+    <string name="notif_startcharging">Start Charging...</string>
+    <string name="notif_stopcharging">Stop Charging!</string>
+    <string name="notif_startmonitor">Monitor is Started!</string>
 </resources>

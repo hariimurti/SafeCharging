@@ -9,8 +9,6 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.view.Gravity;
-import android.widget.Toast;
 
 import net.harimurti.safecharging.R;
 import net.harimurti.safecharging.activity.MainActivity;
@@ -22,8 +20,8 @@ public class BatteryService extends Service {
     private boolean reachMaxLevel;
     private int timer = 1000;
     private int lastLevel = 0;
+    private int logId = 0;
     SharedPreferences preferences;
-    String lastLog;
 
     @Nullable
     @Override
@@ -42,9 +40,10 @@ public class BatteryService extends Service {
             backgroundService = new Handler();
             backgroundService.postDelayed(runnableService, timer);
 
-            Toast toast = Toast.makeText(this, R.string.toast_monitor, Toast.LENGTH_SHORT);
+            /*Toast toast = Toast.makeText(this, R.string.toast_monitor, Toast.LENGTH_SHORT);
             toast.setGravity(Gravity.CENTER, 0, 0);
-            toast.show();
+            toast.show();*/
+            Notifications.Show(context, 0, "Battery Service", getString(R.string.notif_startmonitor), false);
             Log.i(MainActivity.TAG, "BatteryService: starting service & monitor charging");
             /*Log.i(MainActivity.TAG, "BatteryService: stopOnLevel: " + Boolean.toString(preferences.getBoolean("stopOnLevel", false))
                     + ", maxLevel: " + Integer.toString(preferences.getInt("maxLevel", 90))
@@ -65,6 +64,7 @@ public class BatteryService extends Service {
         super.onDestroy();
         isRunning = false;
         //Toast.makeText(this, "SafeCharging service is stopped!, Toast.LENGTH_SHORT).show();
+        Notifications.Close(context, 0);
         Log.i(MainActivity.TAG, "BatteryService: stop service & reset charging to enable");
         if (!Charging.isEnabled())
             Charging.setEnabled(true);
@@ -74,7 +74,6 @@ public class BatteryService extends Service {
         @Override
         public void run() {
             boolean stopCharge = false;
-            String newLog = null;
 
             BatteryStatus Battery = new BatteryStatus(context);
             if (lastLevel != Battery.Level) {
@@ -89,53 +88,70 @@ public class BatteryService extends Service {
                 if (preferences.getBoolean("stopOnUsb", false) && Battery.Plugged.contains("USB")) {
                     if (Battery.Level <= minLevel) {
                         reachMaxLevel = false;
-                        newLog = "condition: usb source + level <= " + Integer.toString(minLevel) +
-                                "% = allowed to charging";
+                        if (logId != 1) {
+                            Notifications.Show(context, 0, context.getString(R.string.notif_startcharging),
+                                    context.getString(R.string.notif_minlevel), false);
+                            Log.i(MainActivity.TAG, "BatteryService: condition: usb source + level <= "
+                                    + Integer.toString(minLevel) + "% = allowed to charging");
+                            logId = 1;
+                        }
                     }
 
                     if (Battery.Level >= maxLevel) {
                         reachMaxLevel = true;
-                        newLog = "condition: usb source + level >= " + Integer.toString(maxLevel) +
-                                "% = not allowed to charging";
+                        if (logId != 2) {
+                            Notifications.Show(context, 0, context.getString(R.string.notif_stopcharging),
+                                    context.getString(R.string.notif_maxlevel), true);
+                            Log.i(MainActivity.TAG, "BatteryService: condition: usb source + level >= " +
+                                    Integer.toString(maxLevel) + "% = not allowed to charging");
+                            logId = 2;
+                        }
                     }
 
                     stopCharge = reachMaxLevel;
                 } else {
                     if (preferences.getBoolean("stopOnLevel", false) && (Battery.Level >= maxLevel)) {
                         reachMaxLevel = true;
-                        newLog = "condition: " + Battery.Plugged.toLowerCase() +
-                                " + level >= " + Integer.toString(maxLevel) +
-                                "% = not allowed to charging";
+                        if (logId != 3) {
+                            Notifications.Show(context, 0, context.getString(R.string.notif_stopcharging),
+                                    context.getString(R.string.notif_maxlevel), true);
+                            Log.i(MainActivity.TAG, "BatteryService: condition: " +
+                                    Battery.Plugged.toLowerCase() +
+                                    " + level >= " + Integer.toString(maxLevel) +
+                                    "% = not allowed to charging");
+                            logId = 3;
+                        }
                     }
 
                     stopCharge = reachMaxLevel;
                 }
-                if (preferences.getBoolean("stopOnOver", false) && Battery.Health.contains("Over")) {
-                    stopCharge = true;
-                    newLog = "condition: health " + Battery.Health.toLowerCase() +
-                            "% = not allowed to charging";
-                }
-
-                if ((lastLog != newLog) && (newLog != null)) {
-                    Log.i(MainActivity.TAG, "BatteryService: " + newLog);
-                }
-
-                if (stopCharge) {
-                    if (Charging.isEnabled()) {
-                        //Log.i(MainActivity.TAG, "BatteryService: set charging false");
-                        Charging.setEnabled(false);
-                    }
-                } else {
-                    if (!Charging.isEnabled()) {
-                        /*Log.i(MainActivity.TAG, "BatteryService: no valid condition: " +
-                                    "set charging true");*/
-                        Charging.setEnabled(true);
-                    }
-                }
-
-                lastLevel = Battery.Level;
-                lastLog = newLog;
             }
+
+            if (preferences.getBoolean("stopOnOver", false) && Battery.Health.contains("Over")) {
+                stopCharge = true;
+                if (logId != 4) {
+                    Notifications.Show(context, 1, context.getString(R.string.notif_stopcharging),
+                            "Battery Health is " + Battery.Health, true);
+                    Log.i(MainActivity.TAG, "BatteryService: condition: health " +
+                            Battery.Health.toLowerCase() + "% = not allowed to charging");
+                    logId = 4;
+                }
+            }
+
+            if (stopCharge) {
+                if (Charging.isEnabled()) {
+                    //Log.i(MainActivity.TAG, "BatteryService: set charging false");
+                    Charging.setEnabled(false);
+                }
+            } else {
+                if (!Charging.isEnabled()) {
+                    /*Log.i(MainActivity.TAG, "BatteryService: no valid condition: " +
+                                    "set charging true");*/
+                    Charging.setEnabled(true);
+                }
+            }
+
+            lastLevel = Battery.Level;
 
             if (isRunning) {
                 backgroundService.postDelayed(this, timer);
