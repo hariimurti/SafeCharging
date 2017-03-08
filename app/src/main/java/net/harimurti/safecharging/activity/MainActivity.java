@@ -4,12 +4,10 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
@@ -34,8 +32,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private boolean isRunningUpdate;
     private boolean isSupported;
     private boolean doubleBackToExitPressedOnce = false;
-    SharedPreferences preferences;
-    SharedPreferences.Editor prefEditor;
+    private ConfigManager config;
     TextView lbLevel, lbHealth, lbStatus, lbService, lbOverLevel, lbUsbLevel;
     Switch swUsbPower, swOverLevel, swOverAll;
 
@@ -45,8 +42,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         this.context = this;
-        preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        prefEditor = preferences.edit();
+        config = new ConfigManager(this);
 
         lbLevel = (TextView) findViewById(R.id.textView5);
         lbHealth = (TextView) findViewById(R.id.textView8);
@@ -59,9 +55,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         swUsbPower = (Switch) findViewById(R.id.switch2);
         swOverAll = (Switch) findViewById(R.id.switch3);
 
-        swOverLevel.setChecked(preferences.getBoolean("stopOnLevel", false));
-        swUsbPower.setChecked(preferences.getBoolean("stopOnUsb", false));
-        swOverAll.setChecked(preferences.getBoolean("stopOnOver", false));
+        swOverLevel.setChecked(config.getBoolean("stopOnLevel"));
+        swUsbPower.setChecked(config.getBoolean("stopOnUsb"));
+        swOverAll.setChecked(config.getBoolean("stopOnOver"));
 
         isSupported = Charging.isSupported();
         if (!RootShell.isAccessGiven()) {
@@ -99,15 +95,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.switch1:
-                prefEditor.putBoolean("stopOnLevel", swOverLevel.isChecked());
+                config.setBoolean("stopOnLevel", swOverLevel.isChecked());
                 break;
 
             case R.id.switch2:
-                prefEditor.putBoolean("stopOnUsb", swUsbPower.isChecked());
+                config.setBoolean("stopOnUsb", swUsbPower.isChecked());
                 break;
 
             case R.id.switch3:
-                prefEditor.putBoolean("stopOnOver", swOverAll.isChecked());
+                config.setBoolean("stopOnOver", swOverAll.isChecked());
                 break;
 
             case R.id.setbatt:
@@ -118,7 +114,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 CustomDialog.showDialogMinMax(context);
                 break;
         }
-        prefEditor.apply();
         serviceManager();
     }
 
@@ -230,14 +225,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
 
             lbOverLevel.setText(getString(R.string.sw_overlevel_custom) + " > " +
-                    Integer.toString(preferences.getInt("maxLevel", 0)) + "%");
+                    Integer.toString(config.getInteger("maxLevel")) + "%");
 
-            if (preferences.getBoolean("usbDisableFull", false)) {
+            if (config.getBoolean("usbDisableFull")) {
                 lbUsbLevel.setText(R.string.sw_usb);
             } else {
                 lbUsbLevel.setText(getString(R.string.sw_usb_custom) + " & Charge at Level " +
-                        Integer.toString(preferences.getInt("minUsbLevel", 0)) + "–" +
-                        Integer.toString(preferences.getInt("maxUsbLevel", 0)) + "%");
+                        Integer.toString(config.getInteger("minUsbLevel")) + "–" +
+                        Integer.toString(config.getInteger("maxUsbLevel")) + "%");
             }
 
             if (isRunningUpdate) backgroundUpdate.postDelayed(this, 1000);
@@ -247,9 +242,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void serviceManager() {
         BatteryStatus Battery = new BatteryStatus(context);
         if (isSupported && !Battery.Plugged.contains("Unknown")) {
-            if (preferences.getBoolean("stopOnUsb", false) ||
-                    preferences.getBoolean("stopOnLevel", false) ||
-                    preferences.getBoolean("stopOnOver", false)) {
+            if (config.getBoolean("stopOnUsb") ||
+                    config.getBoolean("stopOnLevel") ||
+                    config.getBoolean("stopOnOver")) {
                 if (!isServiceRunning(BatteryService.class)) {
                     context.startService(new Intent(context, BatteryService.class));
                 }

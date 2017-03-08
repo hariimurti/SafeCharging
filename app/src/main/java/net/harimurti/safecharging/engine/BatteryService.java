@@ -3,10 +3,8 @@ package net.harimurti.safecharging.engine;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -20,7 +18,6 @@ public class BatteryService extends Service {
     private boolean setCharging;
     private int lastLevel = 0;
     private int logId = 0;
-    SharedPreferences preferences;
 
     @Nullable
     @Override
@@ -30,7 +27,6 @@ public class BatteryService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        preferences = PreferenceManager.getDefaultSharedPreferences(this);
         if (!isRunning) {
             this.context = this;
             isRunning = true;
@@ -48,9 +44,9 @@ public class BatteryService extends Service {
                     ", minLevel: " + Integer.toString(preferences.getInt("minLevel", 60)) +
                     ", stopOnOver: " + Boolean.toString(preferences.getBoolean("stopOnOver", false)));*/
         }
-        if (!Charging.isSupported() || !preferences.getBoolean("stopOnUsb", false) &&
-                !preferences.getBoolean("stopOnLevel", false) &&
-                !preferences.getBoolean("stopOnOver", false)) {
+        ConfigManager config = new ConfigManager(this);
+        if (!Charging.isSupported() || !config.getBoolean("stopOnUsb") &&
+                !config.getBoolean("stopOnLevel") && !config.getBoolean("stopOnOver")) {
             this.stopSelf();
         }
         return START_STICKY;
@@ -68,6 +64,7 @@ public class BatteryService extends Service {
     private Runnable runnableService = new Runnable() {
         @Override
         public void run() {
+            ConfigManager config = new ConfigManager(context);
             BatteryStatus Battery = new BatteryStatus(context);
             if (lastLevel != Battery.Level) {
                 Log.i(MainActivity.TAG, "BatteryService: power: " + Battery.Plugged.toLowerCase() +
@@ -75,10 +72,10 @@ public class BatteryService extends Service {
                         "%, health: " + Battery.Health.toLowerCase() +
                         ", status: " + Battery.Status.toLowerCase());
 
-                if (preferences.getBoolean("stopOnUsb", false) && Battery.Plugged.contains("USB")) {
-                    int maxLevel = preferences.getInt("maxUsbLevel", 90);
-                    int minLevel = preferences.getInt("minUsbLevel", 60);
-                    if (!preferences.getBoolean("usbDisableFull", false)) {
+                if (config.getBoolean("stopOnUsb") && Battery.Plugged.contains("USB")) {
+                    int maxLevel = config.getInteger("maxUsbLevel");
+                    int minLevel = config.getInteger("minUsbLevel");
+                    if (!config.getBoolean("usbDisableFull")) {
                         if (Battery.Level <= minLevel) {
                             setCharging = true;
                             if (logId != 1) {
@@ -109,8 +106,8 @@ public class BatteryService extends Service {
                             logId = 3;
                         }
                     }
-                } else if (preferences.getBoolean("stopOnLevel", false)) {
-                    int maxLevel = preferences.getInt("maxLevel", 90);
+                } else if (config.getBoolean("stopOnLevel")) {
+                    int maxLevel = config.getInteger("maxLevel");
                     if (Battery.Level <= 10) {
                         setCharging = true;
                         if (logId != 4) {
@@ -140,7 +137,7 @@ public class BatteryService extends Service {
                 Charging.setEnabled(setCharging);
             }
 
-            if (preferences.getBoolean("stopOnOver", false) && Battery.Health.contains("Over")) {
+            if (config.getBoolean("stopOnOver") && Battery.Health.contains("Over")) {
                 if (logId != 5) {
                     Notifications.Show(context, 1, context.getString(R.string.notif_stopcharging),
                             "Battery Health is " + Battery.Health, true);

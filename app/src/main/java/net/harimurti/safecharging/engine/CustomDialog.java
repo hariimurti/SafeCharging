@@ -2,8 +2,6 @@ package net.harimurti.safecharging.engine;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -17,12 +15,9 @@ import net.harimurti.safecharging.R;
 
 public class CustomDialog {
     final static int seekBarMaxValue = 30;
-    public static final int defaultMaxLevel = 90;
-    public static final int defaultMinLevel = 60;
 
     public static void showDialogMax(Context context) {
-        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        final SharedPreferences.Editor prefEditor = preferences.edit();
+        final ConfigManager config = new ConfigManager(context);
 
         final Dialog dialog = new Dialog(context);
         dialog.setContentView(R.layout.dialog_max);
@@ -31,13 +26,12 @@ public class CustomDialog {
         final TextView textMax = (TextView) dialog.findViewById(R.id.textView21);
         final SeekBar seekBarMax = (SeekBar) dialog.findViewById(R.id.seekBar1);
 
-        int maxValue = preferences.getInt("maxLevel", 0);
+        int maxValue = config.getInteger("maxLevel");
         if (maxValue == 0) {
-            maxValue = defaultMaxLevel;
-            prefEditor.putInt("maxLevel", defaultMaxLevel);
+            maxValue = config.defaultMaxLevel;
+            config.setInteger("maxLevel", maxValue);
         }
-        prefEditor.putInt("maxLevel-tmp", maxValue);
-        prefEditor.apply();
+        config.setInteger("maxLevel-tmp", maxValue);
 
         seekBarMax.setMax(30);
         seekBarMax.setProgress(seekBarMaxValue - (100 - maxValue));
@@ -51,8 +45,7 @@ public class CustomDialog {
                 }
 
                 textMax.setText(Integer.toString(progress) + "%");
-                prefEditor.putInt("maxLevel-tmp", progress);
-                prefEditor.apply();
+                config.setInteger("maxLevel-tmp", progress);
             }
 
             @Override
@@ -68,8 +61,7 @@ public class CustomDialog {
         dialogSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                prefEditor.putInt("maxLevel", preferences.getInt("maxLevel-tmp", defaultMaxLevel));
-                prefEditor.apply();
+                config.setInteger("maxLevel", config.getInteger("maxLevel-tmp"));
                 dialog.dismiss();
             }
         });
@@ -86,8 +78,7 @@ public class CustomDialog {
     }
 
     public static void showDialogMinMax(final Context context) {
-        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        final SharedPreferences.Editor prefEditor = preferences.edit();
+        final ConfigManager config = new ConfigManager(context);
 
         final Dialog dialog = new Dialog(context);
         dialog.setContentView(R.layout.dialog_minmax);
@@ -98,19 +89,18 @@ public class CustomDialog {
         final SeekBar seekBarMax = (SeekBar) dialog.findViewById(R.id.seekBar2);
         final SeekBar seekBarMin = (SeekBar) dialog.findViewById(R.id.seekBar3);
 
-        int maxValue = preferences.getInt("maxUsbLevel", 0);
+        int maxValue = config.getInteger("maxUsbLevel");
         if (maxValue == 0) {
-            maxValue = defaultMaxLevel;
-            prefEditor.putInt("maxUsbLevel", defaultMaxLevel);
+            maxValue = config.defaultMaxLevel;
+            config.setInteger("maxUsbLevel", maxValue);
         }
-        int minValue = preferences.getInt("minUsbLevel", 0);
+        int minValue = config.getInteger("minUsbLevel");
         if (minValue == 0) {
-            minValue = defaultMinLevel;
-            prefEditor.putInt("minUsbLevel", defaultMinLevel);
+            minValue = config.defaultMinLevel;
+            config.setInteger("minUsbLevel", minValue);
         }
-        prefEditor.putInt("maxUsbLevel-tmp", maxValue);
-        prefEditor.putInt("minUsbLevel-tmp", minValue);
-        prefEditor.apply();
+        config.setInteger("maxUsbLevel-tmp", maxValue);
+        config.setInteger("minUsbLevel-tmp", minValue);
 
         seekBarMax.setMax(30);
         seekBarMax.setProgress(seekBarMaxValue - (100 - maxValue));
@@ -128,16 +118,15 @@ public class CustomDialog {
                 }
 
                 textMax.setText(Integer.toString(progress) + "%");
-                prefEditor.putInt("maxUsbLevel-tmp", progress);
+                config.setInteger("maxUsbLevel-tmp", progress);
 
                 int minProgress = progress - 10;
                 seekBarMin.setMax(minProgress);
                 if (seekBarMin.getProgress() >= progress) {
                     seekBarMin.setProgress(minProgress);
                     textMin.setText(Integer.toString(minProgress) + "%");
-                    prefEditor.putInt("minUsbLevel-tmp", minProgress);
+                    config.setInteger("minUsbLevel-tmp", minProgress);
                 }
-                prefEditor.apply();
             }
 
             @Override
@@ -154,8 +143,7 @@ public class CustomDialog {
                     progress = 10 + progress;
                 }
                 textMin.setText(Integer.toString(progress) + "%");
-                prefEditor.putInt("minUsbLevel-tmp", progress);
-                prefEditor.apply();
+                config.setInteger("minUsbLevel-tmp", progress);
             }
 
             @Override
@@ -165,17 +153,15 @@ public class CustomDialog {
             public void onStopTrackingTouch(SeekBar seekBar) {}
         });
 
-        boolean isSet = preferences.getBoolean("usbDisableFull", false);
+        boolean isSet = config.getBoolean("usbDisableFull");
         Switch disableSwitch = (Switch) dialog.findViewById(R.id.switch4);
         disableSwitch.setChecked(isSet);
-        prefEditor.putBoolean("usbDisableFull-tmp", isSet);
-        prefEditor.apply();
+        config.setBoolean("usbDisableFull-tmp", isSet);
 
         disableSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                prefEditor.putBoolean("usbDisableFull-tmp", isChecked);
-                prefEditor.apply();
+                config.setBoolean("usbDisableFull-tmp", isChecked);
             }
         });
 
@@ -185,10 +171,9 @@ public class CustomDialog {
         dialogSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                prefEditor.putInt("maxUsbLevel", preferences.getInt("maxUsbLevel-tmp", defaultMaxLevel));
-                prefEditor.putInt("minUsbLevel", preferences.getInt("minUsbLevel-tmp", defaultMinLevel));
-                prefEditor.putBoolean("usbDisableFull", preferences.getBoolean("usbDisableFull-tmp", false));
-                prefEditor.apply();
+                config.setInteger("maxUsbLevel", config.getInteger("maxUsbLevel-tmp"));
+                config.setInteger("minUsbLevel", config.getInteger("minUsbLevel-tmp"));
+                config.setBoolean("usbDisableFull", config.getBoolean("usbDisableFull-tmp"));
                 dialog.dismiss();
             }
         });
