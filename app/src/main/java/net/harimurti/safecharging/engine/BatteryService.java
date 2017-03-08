@@ -48,7 +48,7 @@ public class BatteryService extends Service {
                     ", minLevel: " + Integer.toString(preferences.getInt("minLevel", 60)) +
                     ", stopOnOver: " + Boolean.toString(preferences.getBoolean("stopOnOver", false)));*/
         }
-        if (!preferences.getBoolean("stopOnUsb", false) &&
+        if (!Charging.isSupported() || !preferences.getBoolean("stopOnUsb", false) &&
                 !preferences.getBoolean("stopOnLevel", false) &&
                 !preferences.getBoolean("stopOnOver", false)) {
             this.stopSelf();
@@ -75,53 +75,63 @@ public class BatteryService extends Service {
                         "%, health: " + Battery.Health.toLowerCase() +
                         ", status: " + Battery.Status.toLowerCase());
 
-                int maxLevel = preferences.getInt("maxLevel", MainActivity.defaultMaxLevel);
-                int minLevel = preferences.getInt("minLevel", MainActivity.defaultMinLevel);
-
                 if (preferences.getBoolean("stopOnUsb", false) && Battery.Plugged.contains("USB")) {
-                    if (Battery.Level <= minLevel) {
-                        setCharging = true;
-                        if (logId != 1) {
-                            Notifications.Show(context, 0, context.getString(R.string.notif_startcharging),
-                                    context.getString(R.string.notif_minlevel), false);
-                            Log.i(MainActivity.TAG, "BatteryService: condition: usb source + level <= "
-                                    + Integer.toString(minLevel) + "% = allowed to charging");
-                            logId = 1;
+                    int maxLevel = preferences.getInt("maxUsbLevel", 90);
+                    int minLevel = preferences.getInt("minUsbLevel", 60);
+                    if (!preferences.getBoolean("usbDisableFull", false)) {
+                        if (Battery.Level <= minLevel) {
+                            setCharging = true;
+                            if (logId != 1) {
+                                Notifications.Show(context, 0, context.getString(R.string.notif_startcharging),
+                                        context.getString(R.string.notif_minlevel), false);
+                                Log.i(MainActivity.TAG, "BatteryService: condition: usb source + level <= "
+                                        + Integer.toString(minLevel) + "% = allowed to charging");
+                                logId = 1;
+                            }
                         }
-                    }
 
-                    if (Battery.Level >= maxLevel) {
+                        if (Battery.Level >= maxLevel) {
+                            setCharging = false;
+                            if (logId != 2) {
+                                Notifications.Show(context, 0, context.getString(R.string.notif_stopcharging),
+                                        context.getString(R.string.notif_maxlevel), true);
+                                Log.i(MainActivity.TAG, "BatteryService: condition: usb source + level >= " +
+                                        Integer.toString(maxLevel) + "% = not allowed to charging");
+                                logId = 2;
+                            }
+                        }
+                    } else {
                         setCharging = false;
-                        if (logId != 2) {
+                        if (logId != 3) {
                             Notifications.Show(context, 0, context.getString(R.string.notif_stopcharging),
-                                    context.getString(R.string.notif_maxlevel), true);
-                            Log.i(MainActivity.TAG, "BatteryService: condition: usb source + level >= " +
-                                    Integer.toString(maxLevel) + "% = not allowed to charging");
-                            logId = 2;
+                                    context.getString(R.string.notif_usb_disable), true);
+                            Log.i(MainActivity.TAG, "BatteryService: condition: usb source = not allowed to charging");
+                            logId = 3;
                         }
                     }
                 } else if (preferences.getBoolean("stopOnLevel", false)) {
+                    int maxLevel = preferences.getInt("maxLevel", 90);
                     if (Battery.Level <= 10) {
                         setCharging = true;
-                        if (logId != 3) {
+                        if (logId != 4) {
                             Notifications.Show(context, 0, context.getString(R.string.notif_startcharging),
                                     context.getString(R.string.notif_minlevel), false);
                             Log.i(MainActivity.TAG, "BatteryService: condition: " +
                                     " + level <= 10% = allowed to charging");
-                            logId = 3;
+                            logId = 4;
                         }
                     }
 
                     if (Battery.Level >= maxLevel) {
                         setCharging = false;
-                        if (logId != 4) {
+                        if (logId != 5) {
                             Notifications.Show(context, 0, context.getString(R.string.notif_stopcharging),
                                     context.getString(R.string.notif_maxlevel), true);
                             Log.i(MainActivity.TAG, "BatteryService: condition: " +
                                     Battery.Plugged.toLowerCase() +
                                     " + level >= " + Integer.toString(maxLevel) +
                                     "% = not allowed to charging");
-                            logId = 4;
+                            logId = 5;
                         }
                     }
                 }

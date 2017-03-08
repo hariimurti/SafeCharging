@@ -16,8 +16,6 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
-import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,12 +36,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private boolean doubleBackToExitPressedOnce = false;
     SharedPreferences preferences;
     SharedPreferences.Editor prefEditor;
-    TextView lbLevel, lbHealth, lbStatus, lbService;
+    TextView lbLevel, lbHealth, lbStatus, lbService, lbOverLevel, lbUsbLevel;
     Switch swUsbPower, swOverLevel, swOverAll;
-    SeekBar seekBarMax, seekBarMin;
-    final static int seekBarMaxValue = 30;
-    public static final int defaultMaxLevel = 90;
-    public static final int defaultMinLevel = 60;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,11 +52,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         lbHealth = (TextView) findViewById(R.id.textView8);
         lbStatus = (TextView) findViewById(R.id.textView11);
         lbService = (TextView) findViewById(R.id.textView14);
+        lbOverLevel = (TextView) findViewById(R.id.textView15);
+        lbUsbLevel = (TextView) findViewById(R.id.textView17);
+
         swOverLevel = (Switch) findViewById(R.id.switch1);
         swUsbPower = (Switch) findViewById(R.id.switch2);
         swOverAll = (Switch) findViewById(R.id.switch3);
-        seekBarMax = (SeekBar) findViewById(R.id.seekBar1);
-        seekBarMin = (SeekBar) findViewById(R.id.seekBar2);
 
         swOverLevel.setChecked(preferences.getBoolean("stopOnLevel", false));
         swUsbPower.setChecked(preferences.getBoolean("stopOnUsb", false));
@@ -81,63 +76,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         swOverLevel.setOnClickListener(this);
         swUsbPower.setOnClickListener(this);
         swOverAll.setOnClickListener(this);
-
-        if (preferences.getInt("maxLevel", 0) == 0) {
-            prefEditor.putInt("maxLevel", defaultMaxLevel);
-            prefEditor.apply();
-        }
-        if (preferences.getInt("minLevel", 0) == 0) {
-            prefEditor.putInt("minLevel", defaultMinLevel);
-            prefEditor.apply();
-        }
-
-        seekBarMax.setMax(30);
-        setTextMaxLevel(preferences.getInt("maxLevel", defaultMaxLevel));
-        seekBarMax.setProgress(seekBarMaxValue - (100 - preferences.getInt("maxLevel", defaultMaxLevel)));
-
-        seekBarMin.setMax(preferences.getInt("maxLevel", defaultMaxLevel) - 10);
-        setTextUsbLevel(preferences.getInt("minLevel", defaultMinLevel), preferences.getInt("maxLevel", defaultMaxLevel));
-        seekBarMin.setProgress(preferences.getInt("minLevel", defaultMinLevel));
-
-        seekBarMax.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if(progress <= 30){
-                    progress = (100 - 30) + progress;
-                }
-
-                prefEditor.putInt("maxLevel", progress);
-                prefEditor.apply();
-
-                setTextMaxLevel(progress);
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {}
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {}
-        });
-
-        seekBarMin.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if(progress <= 10){
-                    progress = 10 + progress;
-                }
-
-                prefEditor.putInt("minLevel", progress);
-                prefEditor.apply();
-
-                setTextUsbLevel(progress, preferences.getInt("maxLevel", defaultMaxLevel));
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {}
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {}
-        });
     }
 
     @Override
@@ -170,6 +108,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             case R.id.switch3:
                 prefEditor.putBoolean("stopOnOver", swOverAll.isChecked());
+                break;
+
+            case R.id.setbatt:
+                CustomDialog.showDialogMax(context);
+                break;
+
+            case R.id.setbatt1:
+                CustomDialog.showDialogMinMax(context);
                 break;
         }
         prefEditor.apply();
@@ -283,29 +229,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 lbService.setText(R.string.label_notsupported);
             }
 
+            lbOverLevel.setText(getString(R.string.sw_overlevel_custom) + " > " +
+                    Integer.toString(preferences.getInt("maxLevel", 0)) + "%");
+
+            if (preferences.getBoolean("usbDisableFull", false)) {
+                lbUsbLevel.setText(R.string.sw_usb);
+            } else {
+                lbUsbLevel.setText(getString(R.string.sw_usb_custom) + " & Charge at Level " +
+                        Integer.toString(preferences.getInt("minUsbLevel", 0)) + "–" +
+                        Integer.toString(preferences.getInt("maxUsbLevel", 0)) + "%");
+            }
+
             if (isRunningUpdate) backgroundUpdate.postDelayed(this, 1000);
         }
     };
-
-    private void setTextMaxLevel(int value) {
-        String textToDisplay = String.format(getString(R.string.sw_overlevel_custom), value)
-                + getString(R.string.label_persen);
-        swOverLevel.setText(textToDisplay);
-        int min = preferences.getInt("minLevel", defaultMinLevel);
-        setTextUsbLevel(min, value);
-        seekBarMin.setMax(value - 10);
-        if (value < min) {
-            seekBarMin.setProgress(value - 10);
-            prefEditor.putInt("minLevel", value - 10);
-            prefEditor.apply();
-        }
-    }
-
-    private void setTextUsbLevel(int min, int max) {
-        String textToDisplay = String.format(getString(R.string.sw_usb_custom) + " %d-%d", min, max)
-                + getString(R.string.label_persen);
-        swUsbPower.setText(textToDisplay);
-    }
 
     private void serviceManager() {
         BatteryStatus Battery = new BatteryStatus(context);
