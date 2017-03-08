@@ -139,7 +139,7 @@ public class BatteryService extends Service {
 
             if (config.getBoolean("stopOnOver") && Battery.Health.contains("Over")) {
                 if (logId != 5) {
-                    Notifications.Show(context, 1, context.getString(R.string.notif_stopcharging),
+                    Notifications.Show(context, 0, context.getString(R.string.notif_stopcharging),
                             "Battery Health is " + Battery.Health, true);
                     Log.i(MainActivity.TAG, "BatteryService: condition: health " +
                             Battery.Health.toLowerCase() + "% = not allowed to charging");

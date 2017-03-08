@@ -14,7 +14,7 @@ import android.widget.TextView;
 import net.harimurti.safecharging.R;
 
 public class CustomDialog {
-    final static int seekBarMaxValue = 30;
+    private static int seekBarMaxValue = 30;
 
     public static void showDialogMax(Context context) {
         final ConfigManager config = new ConfigManager(context);
