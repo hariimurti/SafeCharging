@@ -22,15 +22,17 @@ public class PowerReceiver extends BroadcastReceiver {
         Log.i(MainActivity.TAG, "PowerReceiver: " + source);
 
         Intent background = new Intent(context, BatteryService.class);
-        if (!source.contains("Unknown")) {
-            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-            if (preferences.getBoolean("stopOnUsb", false)
-                    || preferences.getBoolean("stopOnLevel", false)
-                    || preferences.getBoolean("stopOnOver", false)) {
-                context.startService(background);
+        if (Charging.isSupported()) {
+            if (!source.contains("Unknown")) {
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+                if (preferences.getBoolean("stopOnUsb", false)
+                        || preferences.getBoolean("stopOnLevel", false)
+                        || preferences.getBoolean("stopOnOver", false)) {
+                    context.startService(background);
+                }
+            } else {
+                context.stopService(background);
             }
-        } else {
-            context.stopService(background);
         }
     }
 }

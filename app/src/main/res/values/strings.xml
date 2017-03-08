@@ -31,6 +31,7 @@
     <string name="label_service">Service</string>
     <string name="label_monitor">Monitoring</string>
     <string name="label_notrunning">Not Running</string>
+    <string name="label_notsupported">Not Supported</string>
     <string name="toast_nomonitor">No Conditions is Monitored!</string>
     <string name="toast_monitor">SafeCharging: Monitor is Started!</string>
     <string name="toast_reset">SafeCharging: Reset Charging!</string>

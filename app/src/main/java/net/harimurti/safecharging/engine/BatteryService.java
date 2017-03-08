@@ -18,7 +18,6 @@ public class BatteryService extends Service {
     private Context context;
     private boolean isRunning;
     private boolean setCharging;
-    private int timer = 1000;
     private int lastLevel = 0;
     private int logId = 0;
     SharedPreferences preferences;
@@ -38,7 +37,7 @@ public class BatteryService extends Service {
             setCharging = true;
 
             backgroundService = new Handler();
-            backgroundService.postDelayed(runnableService, timer);
+            backgroundService.post(runnableService);
 
             Notifications.Show(context, 0, "Battery Service", getString(R.string.notif_startmonitor), false);
             Log.i(MainActivity.TAG, "BatteryService: starting service & monitor charging");
@@ -61,7 +60,6 @@ public class BatteryService extends Service {
     public void onDestroy() {
         super.onDestroy();
         isRunning = false;
-        //Toast.makeText(this, "SafeCharging service is stopped!, Toast.LENGTH_SHORT).show();
         Notifications.Close(context, 0);
         Log.i(MainActivity.TAG, "BatteryService: stop service & reset charging to enable");
         Charging.setEnabled(true);
@@ -146,7 +144,7 @@ public class BatteryService extends Service {
             lastLevel = Battery.Level;
 
             if (isRunning) {
-                backgroundService.postDelayed(this, timer);
+                backgroundService.postDelayed(this, 1000);
             } else {
                 stopSelf();
             }

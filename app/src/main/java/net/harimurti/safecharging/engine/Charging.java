@@ -19,6 +19,10 @@ import java.util.concurrent.TimeoutException;
 public class Charging {
     private static String pathFile = "/sys/class/power_supply/battery/charging_enabled";
 
+    public static boolean isSupported() {
+        return new File(pathFile).isFile();
+    }
+
     public static boolean isEnabled() {
         String retval = "";
 

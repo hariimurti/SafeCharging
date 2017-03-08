@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Context context;
     private Handler backgroundUpdate;
     private boolean isRunningUpdate;
+    private boolean isSupported;
     private boolean doubleBackToExitPressedOnce = false;
     SharedPreferences preferences;
     SharedPreferences.Editor prefEditor;
@@ -67,12 +68,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         swUsbPower.setChecked(preferences.getBoolean("stopOnUsb", false));
         swOverAll.setChecked(preferences.getBoolean("stopOnOver", false));
 
+        isSupported = Charging.isSupported();
         if (!RootShell.isAccessGiven()) {
             //android.os.Process.killProcess(android.os.Process.myPid());
-            swOverLevel.setEnabled(false);
-            swUsbPower.setEnabled(false);
-            swOverAll.setEnabled(false);
+            isSupported = false;
         }
+
+        swOverLevel.setEnabled(isSupported);
+        swUsbPower.setEnabled(isSupported);
+        swOverAll.setEnabled(isSupported);
 
         swOverLevel.setOnClickListener(this);
         swUsbPower.setOnClickListener(this);
@@ -183,7 +187,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         int id = item.getItemId();
 
         if (id == R.id.action_restart) {
-            if (swOverLevel.isChecked() || swUsbPower.isChecked() || swOverAll.isChecked()) {
+            if (isSupported && (swOverLevel.isChecked() || swUsbPower.isChecked() || swOverAll.isChecked())) {
                 BatteryStatus Battery = new BatteryStatus(context);
                 String source = Battery.Plugged;
                 if (!source.contains("Unknown")) {
@@ -192,7 +196,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         context.stopService(service);
                     context.startService(service);
                 }
-                //setProperty(true);
             } else {
                 Toast toast = Toast.makeText(this, R.string.toast_nomonitor, Toast.LENGTH_SHORT);
                 toast.setGravity(Gravity.CENTER, 0, 0);
@@ -200,16 +203,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
             return true;
         } else if (id == R.id.action_reset) {
-            if (isServiceRunning(BatteryService.class)) {
-                context.stopService(new Intent(context, BatteryService.class));
+            if (isSupported) {
+                if (isServiceRunning(BatteryService.class)) {
+                    context.stopService(new Intent(context, BatteryService.class));
+                }
+
+                Charging.setEnabled(true);
+
+                Toast toast = Toast.makeText(this, R.string.toast_reset, Toast.LENGTH_SHORT);
+                toast.setGravity(Gravity.CENTER, 0, 0);
+                toast.show();
             }
-
-            Charging.setEnabled(true);
-
-            Toast toast = Toast.makeText(this, R.string.toast_reset, Toast.LENGTH_SHORT);
-            toast.setGravity(Gravity.CENTER, 0, 0);
-            toast.show();
-
             return true;
         } else if (id == R.id.action_about) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -260,14 +264,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Runnable runnableUpdate = new Runnable() {
         @Override
         public void run() {
-            /*if (!preferences.getBoolean("stopOnUsb", false)
-                    && !preferences.getBoolean("stopOnLevel", false)
-                    && !preferences.getBoolean("stopOnOver", false)) {
-                if (isServiceRunning(BatteryService.class)) {
-                    context.stopService(new Intent(context, BatteryService.class));
-                }
-            }*/
-
             BatteryStatus Battery = new BatteryStatus(context);
 
             lbLevel.setText(String.format(Locale.US, "%d", Battery.Level));
@@ -277,10 +273,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             else
                 lbStatus.setText(Battery.Status);
 
-            if (isServiceRunning(BatteryService.class)) {
-                lbService.setText(R.string.label_monitor);
+            if (isSupported) {
+                if (isServiceRunning(BatteryService.class)) {
+                    lbService.setText(R.string.label_monitor);
+                } else {
+                    lbService.setText(R.string.label_notrunning);
+                }
             } else {
-                lbService.setText(R.string.label_notrunning);
+                lbService.setText(R.string.label_notsupported);
             }
 
             if (isRunningUpdate) backgroundUpdate.postDelayed(this, 1000);
@@ -309,7 +309,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void serviceManager() {
         BatteryStatus Battery = new BatteryStatus(context);
-        if (!Battery.Plugged.contains("Unknown")) {
+        if (isSupported && !Battery.Plugged.contains("Unknown")) {
             if (preferences.getBoolean("stopOnUsb", false) ||
                     preferences.getBoolean("stopOnLevel", false) ||
                     preferences.getBoolean("stopOnOver", false)) {
