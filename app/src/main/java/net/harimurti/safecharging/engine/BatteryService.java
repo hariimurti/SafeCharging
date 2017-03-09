@@ -134,14 +134,23 @@ public class BatteryService extends Service {
             }
 
             if (config.getBoolean("stopOnOver") && Battery.Health.contains("Over")) {
-                if (logId != 5) {
+                if (logId != 7 ) {
                     Notifications.Show(context, 0, context.getString(R.string.notif_stopcharging),
                             "Battery Health is " + Battery.Health, true);
                     Log.i(MainActivity.TAG, "BatteryService: condition: health " +
                             Battery.Health.toLowerCase() + "% = not allowed to charging");
-                    logId = 5;
+                    logId = 7;
                 }
                 Charging.setEnabled(false);
+            } else {
+                if ((logId == 7) && Battery.Health.contains("Good")) {
+                    Notifications.Show(context, 0, context.getString(R.string.notif_startcharging),
+                            context.getString(R.string.notif_healthgood), false);
+                    Log.i(MainActivity.TAG, "BatteryService: condition: health " +
+                            Battery.Health.toLowerCase() + "% = allowed to charging");
+                    Charging.setEnabled(true);
+                    logId = 0;
+                }
             }
 
             lastLevel = Battery.Level;

@@ -42,6 +42,7 @@
     <string name="notif_startcharging">Start Charging&#8230;</string>
     <string name="notif_stopcharging">Stop Charging!</string>
     <string name="notif_startmonitor">Monitor is Started!</string>
+    <string name="notif_healthgood">Battery Health is Good again!</string>
     <string name="about">Satu lagi project hasil menjiplak ide dari sebuah trit xda. Dimana aplikasi ini berfungsi untuk menghentikan arus charging, bila memenuhi suatu kondisi tertentu. Mohon maaf bila ada typo maupun &#8230; ah syudah lah.</string>
     <string name="website">Website http://harimurti.net</string>
     <string name="ok">OK</string>
