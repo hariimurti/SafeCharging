@@ -5,10 +5,12 @@
     <string name="sw_usb">USB Source (not AC Charger)</string>
     <string name="sw_usb_custom">USB Source</string>
     <string name="sw_usb_disable">Always Stop Charging!</string>
+    <string name="sw_battfull">Stop Charging on Battery Full!\nIgnore Maximum Level</string>
+    <string name="sw_battfull_label">Battery Full</string>
     <string name="sw_overlevel">Battery Level > 90%</string>
     <string name="sw_overlevel_custom">Battery Level</string>
     <string name="sw_overall">Battery Over Voltage or Over Heat</string>
-    <string name="label_option1">Click to change max level</string>
+    <string name="label_option1">Click to change max level or battery full</string>
     <string name="label_option2">Click to change min, max level, and others</string>
     <string name="label_level">Level</string>
     <string name="label_health">Health</string>

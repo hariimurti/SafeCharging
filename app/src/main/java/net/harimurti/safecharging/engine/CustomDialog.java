@@ -58,6 +58,18 @@ public class CustomDialog {
             public void onStopTrackingTouch(SeekBar seekBar) {}
         });
 
+        boolean isSet = config.getBoolean("batteryFull");
+        Switch disableSwitch = (Switch) dialog.findViewById(R.id.switch5);
+        disableSwitch.setChecked(isSet);
+        config.setBoolean("batteryFull-tmp", isSet);
+
+        disableSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                config.setBoolean("batteryFull-tmp", isChecked);
+            }
+        });
+
         Button dialogSave = (Button) dialog.findViewById(R.id.button1);
         Button dialogCancel = (Button) dialog.findViewById(R.id.button2);
 
@@ -65,6 +77,7 @@ public class CustomDialog {
             @Override
             public void onClick(View v) {
                 config.setInteger("maxLevel", config.getInteger("maxLevel-tmp"));
+                config.setBoolean("batteryFull", config.getBoolean("batteryFull-tmp"));
                 dialog.dismiss();
             }
         });

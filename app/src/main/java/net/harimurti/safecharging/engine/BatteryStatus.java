@@ -7,6 +7,7 @@ import android.os.BatteryManager;
 
 public class BatteryStatus {
     public boolean isCharging;
+    public boolean isBatteryFull;
     public int Level;
     public String Plugged;
     public String Status;
@@ -21,12 +22,15 @@ public class BatteryStatus {
         switch (batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1)) {
             case BatteryManager.BATTERY_STATUS_CHARGING:
                 isCharging = true;
+                isBatteryFull = false;
                 break;
             case BatteryManager.BATTERY_STATUS_FULL:
                 isCharging = true;
+                isBatteryFull = true;
                 break;
             default:
                 isCharging = false;
+                isBatteryFull = false;
                 break;
         }
 

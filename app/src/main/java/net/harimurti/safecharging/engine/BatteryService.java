@@ -133,6 +133,19 @@ public class BatteryService extends Service {
                 Charging.setEnabled(setCharging);
             }
 
+            if (config.getBoolean("stopOnLevel") && config.getBoolean("batteryFull") &&
+                    Battery.isBatteryFull) {
+                Charging.setEnabled(true);
+                if (logId != 6) {
+                    Notifications.Show(context, 0, context.getString(R.string.sw_battfull_label),
+                            context.getString(R.string.notif_replug), true);
+                    Log.i(MainActivity.TAG, "BatteryService: condition: " +
+                            context.getString(R.string.sw_battfull_label).toLowerCase() +
+                            " = not allowed to charging");
+                    logId = 6;
+                }
+            }
+
             if (config.getBoolean("stopOnOver") && Battery.Health.contains("Over")) {
                 if (logId != 7 ) {
                     Notifications.Show(context, 0, context.getString(R.string.notif_stopcharging),

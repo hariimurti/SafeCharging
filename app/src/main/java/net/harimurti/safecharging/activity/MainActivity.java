@@ -195,8 +195,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 lbService.setText(R.string.label_notsupported);
             }
 
-            lbOverLevel.setText(getString(R.string.sw_overlevel_custom) + " > " +
-                    Integer.toString(config.getInteger("maxLevel")) + "%");
+            if (config.getBoolean("batteryFull")) {
+                lbOverLevel.setText(getString(R.string.sw_battfull_label));
+            } else {
+                lbOverLevel.setText(getString(R.string.sw_overlevel_custom) + " > " +
+                        Integer.toString(config.getInteger("maxLevel")) + "%");
+            }
 
             if (config.getBoolean("usbDisableFull")) {
                 lbUsbLevel.setText(R.string.sw_usb);
