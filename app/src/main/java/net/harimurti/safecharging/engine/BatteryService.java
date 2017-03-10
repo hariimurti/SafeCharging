@@ -87,7 +87,7 @@ public class BatteryService extends Service {
                             setCharging = false;
                             if (logId != 2) {
                                 Notifications.Show(context, 0, context.getString(R.string.notif_maxlevel),
-                                        context.getString(R.string.notif_replug), true);
+                                        context.getString(R.string.notif_usbmax), true);
                                 Log.i(MainActivity.TAG, "BatteryService: condition: usb source + level >= " +
                                         Integer.toString(maxLevel) + "% = not allowed to charging");
                                 logId = 2;

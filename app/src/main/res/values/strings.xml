@@ -40,6 +40,7 @@
     <string name="notif_maxlevel">Max Level &#8212; Stop Charging!</string>
     <string name="notif_minlevel">Below Min Level&#8230;</string>
     <string name="notif_replug">Re-plug to start charging again&#8230;</string>
+    <string name="notif_usbmax">if Min Level is reached it will charging again&#8230;</string>
     <string name="notif_usb_disable">USB Source is forbidden!</string>
     <string name="notif_startcharging">Start Charging&#8230;</string>
     <string name="notif_stopcharging">Stop Charging!</string>
