@@ -61,12 +61,14 @@ public class CustomDialog {
         boolean isSet = config.getBoolean("batteryFull");
         Switch disableSwitch = (Switch) dialog.findViewById(R.id.switch5);
         disableSwitch.setChecked(isSet);
+        seekBarMax.setEnabled(!isSet);
         config.setBoolean("batteryFull-tmp", isSet);
 
         disableSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 config.setBoolean("batteryFull-tmp", isChecked);
+                seekBarMax.setEnabled(!isChecked);
             }
         });
 
@@ -172,12 +174,16 @@ public class CustomDialog {
         boolean isSet = config.getBoolean("usbDisableFull");
         Switch disableSwitch = (Switch) dialog.findViewById(R.id.switch4);
         disableSwitch.setChecked(isSet);
+        seekBarMax.setEnabled(!isSet);
+        seekBarMin.setEnabled(!isSet);
         config.setBoolean("usbDisableFull-tmp", isSet);
 
         disableSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 config.setBoolean("usbDisableFull-tmp", isChecked);
+                seekBarMax.setEnabled(!isChecked);
+                seekBarMin.setEnabled(!isChecked);
             }
         });
 
