@@ -2,20 +2,24 @@ package net.harimurti.safecharging.engine;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 
 public class ConfigManager {
-    private SharedPreferences preferences;
-    private SharedPreferences.Editor prefEditor;
+    private SharedPreferences PrefSwitch;
+    private SharedPreferences PrefValue;
     int defaultMaxLevel = 90;
     int defaultMinLevel = 60;
 
     public ConfigManager(Context context) {
-        preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        PrefSwitch = context.getSharedPreferences("Pref_Switch", Context.MODE_PRIVATE);
+        PrefValue = context.getSharedPreferences("Pref_Value", Context.MODE_PRIVATE);
     }
 
     public boolean getBoolean(String key) {
-        return preferences.getBoolean(key, false);
+        return PrefSwitch.getBoolean(key, false);
+    }
+
+    public void setBoolean(String key, boolean value) {
+        PrefSwitch.edit().putBoolean(key, value).apply();
     }
 
     public int getInteger(String key) {
@@ -25,18 +29,10 @@ public class ConfigManager {
         else if (key.toLowerCase().contains("min"))
             defValue = defaultMinLevel;
 
-        return preferences.getInt(key, defValue);
-    }
-
-    public void setBoolean(String key, boolean value) {
-        prefEditor = preferences.edit();
-        prefEditor.putBoolean(key, value);
-        prefEditor.apply();
+        return PrefValue.getInt(key, defValue);
     }
 
     public void setInteger(String key, int value) {
-        prefEditor = preferences.edit();
-        prefEditor.putInt(key, value);
-        prefEditor.apply();
+        PrefValue.edit().putInt(key, value).apply();
     }
 }

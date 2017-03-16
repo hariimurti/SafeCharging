@@ -52,7 +52,7 @@
             android:text="@string/label_titikdua" />
 
         <TextView
-            android:id="@+id/textView5"
+            android:id="@+id/textLevel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/label_zero" />
@@ -89,7 +89,7 @@
             android:text="@string/label_titikdua" />
 
         <TextView
-            android:id="@+id/textView8"
+            android:id="@+id/textHealth"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/label_titiktitik" />
@@ -118,7 +118,7 @@
             android:text="@string/label_titikdua" />
 
         <TextView
-            android:id="@+id/textView11"
+            android:id="@+id/textStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/label_titiktitik" />
@@ -147,7 +147,7 @@
             android:text="@string/label_titikdua" />
 
         <TextView
-            android:id="@+id/textView14"
+            android:id="@+id/textService"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/label_titiktitik" />
@@ -182,24 +182,24 @@
         android:paddingRight="@dimen/activity_side_sub_margin">
 
         <Switch
-            android:id="@+id/switch1"
+            android:id="@+id/switchLevel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true" />
 
         <LinearLayout
-            android:id="@+id/setbatt"
+            android:id="@+id/textOption1"
             android:onClick="onClick"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginRight="@dimen/activity_side_sub_margin"
             android:layout_alignParentTop="true"
-            android:layout_toStartOf="@+id/switch1"
+            android:layout_toStartOf="@+id/switchLevel"
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/textView15"
+                android:id="@+id/textLabelSwitchLevel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingRight="@dimen/activity_side_sub_margin"
@@ -232,24 +232,24 @@
         android:paddingRight="@dimen/activity_side_sub_margin">
 
         <Switch
-            android:id="@+id/switch2"
+            android:id="@+id/switchUsb"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true" />
 
         <LinearLayout
-            android:id="@+id/setbatt1"
+            android:id="@+id/textOption2"
             android:onClick="onClick"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginRight="@dimen/activity_side_sub_margin"
             android:layout_alignParentTop="true"
-            android:layout_toStartOf="@+id/switch2"
+            android:layout_toStartOf="@+id/switchUsb"
             android:orientation="vertical">
 
         <TextView
-            android:id="@+id/textView17"
+            android:id="@+id/textLabelSwitchUsb"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/sw_usb" />
@@ -281,7 +281,7 @@
         android:paddingRight="@dimen/activity_side_sub_margin">
 
         <Switch
-            android:id="@+id/switch3"
+            android:id="@+id/switchOver"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
@@ -294,7 +294,7 @@
             android:layout_marginRight="@dimen/activity_side_sub_margin"
             android:text="@string/sw_overall"
             android:layout_centerVertical="true"
-            android:layout_toStartOf="@+id/switch3" />
+            android:layout_toStartOf="@+id/switchOver" />
 
     </RelativeLayout>
 

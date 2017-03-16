@@ -38,20 +38,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         this.context = this;
         config = new ConfigManager(this);
 
-        lbLevel = (TextView) findViewById(R.id.textView5);
-        lbHealth = (TextView) findViewById(R.id.textView8);
-        lbStatus = (TextView) findViewById(R.id.textView11);
-        lbService = (TextView) findViewById(R.id.textView14);
-        lbOverLevel = (TextView) findViewById(R.id.textView15);
-        lbUsbLevel = (TextView) findViewById(R.id.textView17);
+        lbLevel = (TextView) findViewById(R.id.textLevel);
+        lbHealth = (TextView) findViewById(R.id.textHealth);
+        lbStatus = (TextView) findViewById(R.id.textStatus);
+        lbService = (TextView) findViewById(R.id.textService);
+        lbOverLevel = (TextView) findViewById(R.id.textLabelSwitchLevel);
+        lbUsbLevel = (TextView) findViewById(R.id.textLabelSwitchUsb);
 
-        swOverLevel = (Switch) findViewById(R.id.switch1);
-        swUsbPower = (Switch) findViewById(R.id.switch2);
-        swOverAll = (Switch) findViewById(R.id.switch3);
+        swOverLevel = (Switch) findViewById(R.id.switchLevel);
+        swUsbPower = (Switch) findViewById(R.id.switchUsb);
+        swOverAll = (Switch) findViewById(R.id.switchOver);
 
-        swOverLevel.setChecked(config.getBoolean("stopOnLevel"));
-        swUsbPower.setChecked(config.getBoolean("stopOnUsb"));
-        swOverAll.setChecked(config.getBoolean("stopOnOver"));
+        swOverLevel.setChecked(config.getBoolean("switch_on_level"));
+        swUsbPower.setChecked(config.getBoolean("switch_on_usb"));
+        swOverAll.setChecked(config.getBoolean("switch_on_over"));
 
         isSupported = Charging.isSupported();
         if (!RootShell.isAccessGiven()) {
@@ -88,23 +88,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.switch1:
-                config.setBoolean("stopOnLevel", swOverLevel.isChecked());
+            case R.id.switchLevel:
+                config.setBoolean("switch_on_level", swOverLevel.isChecked());
                 break;
 
-            case R.id.switch2:
-                config.setBoolean("stopOnUsb", swUsbPower.isChecked());
+            case R.id.switchUsb:
+                config.setBoolean("switch_on_usb", swUsbPower.isChecked());
                 break;
 
-            case R.id.switch3:
-                config.setBoolean("stopOnOver", swOverAll.isChecked());
+            case R.id.switchOver:
+                config.setBoolean("switch_on_over", swOverAll.isChecked());
                 break;
 
-            case R.id.setbatt:
+            case R.id.textOption1:
                 CustomDialog.showDialogMax(context);
                 break;
 
-            case R.id.setbatt1:
+            case R.id.textOption2:
                 CustomDialog.showDialogMinMax(context);
                 break;
         }
@@ -195,19 +195,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 lbService.setText(R.string.label_notsupported);
             }
 
-            if (config.getBoolean("batteryFull")) {
+            if (config.getBoolean("switch_battery_full")) {
                 lbOverLevel.setText(getString(R.string.sw_battfull_label));
             } else {
                 lbOverLevel.setText(getString(R.string.sw_overlevel_custom) + " > " +
-                        Integer.toString(config.getInteger("maxLevel")) + "%");
+                        Integer.toString(config.getInteger("max_level")) + "%");
             }
 
-            if (config.getBoolean("usbDisableFull")) {
+            if (config.getBoolean("switch_disable_usb")) {
                 lbUsbLevel.setText(R.string.sw_usb);
             } else {
                 lbUsbLevel.setText(getString(R.string.sw_usb_custom) + " & Charge at Level " +
-                        Integer.toString(config.getInteger("minUsbLevel")) + "–" +
-                        Integer.toString(config.getInteger("maxUsbLevel")) + "%");
+                        Integer.toString(config.getInteger("min_usb")) + "–" +
+                        Integer.toString(config.getInteger("max_usb")) + "%");
             }
 
             if (isRunningUpdate) backgroundUpdate.postDelayed(this, 1000);

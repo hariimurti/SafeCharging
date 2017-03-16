@@ -38,6 +38,7 @@
     <string name="toast_monitor">SafeCharging: Monitor is Started!</string>
     <string name="toast_reset">SafeCharging: Reset Charging!</string>
     <string name="notif_maxlevel">Max Level &#8212; Stop Charging!</string>
+    <string name="notif_battfull">Battery Full &#8212; Stop Charging!</string>
     <string name="notif_minlevel">Below Min Level&#8230;</string>
     <string name="notif_replug">Re-plug to start charging again&#8230;</string>
     <string name="notif_usbmax">if Min Level is reached it will charging again&#8230;</string>

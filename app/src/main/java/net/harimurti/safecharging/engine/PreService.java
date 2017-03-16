@@ -16,9 +16,9 @@ public class PreService {
             BatteryStatus Battery = new BatteryStatus(context);
             if (Charging.isSupported() && !Battery.Plugged.contains("Unknown")) {
                 ConfigManager config = new ConfigManager(context);
-                if (config.getBoolean("stopOnUsb") ||
-                        config.getBoolean("stopOnLevel") ||
-                        config.getBoolean("stopOnOver")) {
+                if (config.getBoolean("switch_on_level") ||
+                        config.getBoolean("switch_on_usb") ||
+                        config.getBoolean("switch_on_over")) {
                     Intent background = new Intent(context, serviceClass);
                     context.startService(background);
                 }
@@ -54,9 +54,8 @@ public class PreService {
         BatteryStatus Battery = new BatteryStatus(context);
         if (Charging.isSupported() && !Battery.Plugged.contains("Unknown")) {
             ConfigManager config = new ConfigManager(context);
-            if (config.getBoolean("stopOnUsb") ||
-                    config.getBoolean("stopOnLevel") ||
-                    config.getBoolean("stopOnOver")) {
+            if (config.getBoolean("switch_on_level") || config.getBoolean("switch_on_usb") ||
+                    config.getBoolean("switch_on_over")) {
                 context.startService(background);
             }
         }

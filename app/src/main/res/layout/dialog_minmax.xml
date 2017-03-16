@@ -18,7 +18,7 @@
             android:text="@string/label_max" />
 
         <TextView
-            android:id="@+id/textView23"
+            android:id="@+id/textMaxLevel"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:paddingLeft="5dp"
@@ -28,11 +28,11 @@
             android:text="@string/label_zeropersen" />
 
         <SeekBar
-            android:id="@+id/seekBar2"
+            android:id="@+id/seekBarMaxLevel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_toRightOf="@+id/textView23" />
+            android:layout_toRightOf="@+id/textMaxLevel" />
 
     </RelativeLayout>
 
@@ -50,7 +50,7 @@
             android:text="@string/label_min" />
 
         <TextView
-            android:id="@+id/textView25"
+            android:id="@+id/textMinLevel"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
@@ -60,16 +60,16 @@
             android:text="@string/label_zeropersen" />
 
         <SeekBar
-            android:id="@+id/seekBar3"
+            android:id="@+id/seekBarMinLevel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_toRightOf="@+id/textView25" />
+            android:layout_toRightOf="@+id/textMinLevel" />
 
     </RelativeLayout>
 
     <Switch
-        android:id="@+id/switch4"
+        android:id="@+id/switchDisableUsb"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp"
@@ -83,7 +83,7 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/button3"
+            android:id="@+id/btnSave2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -95,7 +95,7 @@
             android:layout_weight="0.1" />
 
         <Button
-            android:id="@+id/button4"
+            android:id="@+id/btnCancel2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"

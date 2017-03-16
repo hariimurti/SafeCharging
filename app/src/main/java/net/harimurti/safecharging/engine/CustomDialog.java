@@ -24,17 +24,17 @@ public class CustomDialog {
 
         final Dialog dialog = new Dialog(context);
         dialog.setContentView(R.layout.dialog_max);
-        dialog.setTitle("Config All Charger");
+        dialog.setTitle("Charging Options");
 
-        final TextView textMax = (TextView) dialog.findViewById(R.id.textView21);
-        final SeekBar seekBarMax = (SeekBar) dialog.findViewById(R.id.seekBar1);
+        final TextView textMax = (TextView) dialog.findViewById(R.id.textMaximumLevel);
+        final SeekBar seekBarMax = (SeekBar) dialog.findViewById(R.id.seekBarMaximumLevel);
 
-        int maxValue = config.getInteger("maxLevel");
+        int maxValue = config.getInteger("max_level");
         if (maxValue == 0) {
             maxValue = config.defaultMaxLevel;
-            config.setInteger("maxLevel", maxValue);
+            config.setInteger("max_level", maxValue);
         }
-        config.setInteger("maxLevel-tmp", maxValue);
+        config.setInteger("tmp_max_level", maxValue);
 
         seekBarMax.setMax(30);
         seekBarMax.setProgress(seekBarMaxValue - (100 - maxValue));
@@ -48,7 +48,7 @@ public class CustomDialog {
                 }
 
                 textMax.setText(Integer.toString(progress) + "%");
-                config.setInteger("maxLevel-tmp", progress);
+                config.setInteger("tmp_max_level", progress);
             }
 
             @Override
@@ -58,28 +58,28 @@ public class CustomDialog {
             public void onStopTrackingTouch(SeekBar seekBar) {}
         });
 
-        boolean isSet = config.getBoolean("batteryFull");
-        Switch disableSwitch = (Switch) dialog.findViewById(R.id.switch5);
+        boolean isSet = config.getBoolean("switch_battery_full");
+        Switch disableSwitch = (Switch) dialog.findViewById(R.id.switchBatteryFull);
         disableSwitch.setChecked(isSet);
         seekBarMax.setEnabled(!isSet);
-        config.setBoolean("batteryFull-tmp", isSet);
+        config.setBoolean("tmp_switch_battery_full", isSet);
 
         disableSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                config.setBoolean("batteryFull-tmp", isChecked);
+                config.setBoolean("tmp_switch_battery_full", isChecked);
                 seekBarMax.setEnabled(!isChecked);
             }
         });
 
-        Button dialogSave = (Button) dialog.findViewById(R.id.button1);
-        Button dialogCancel = (Button) dialog.findViewById(R.id.button2);
+        Button dialogSave = (Button) dialog.findViewById(R.id.btnSave1);
+        Button dialogCancel = (Button) dialog.findViewById(R.id.btnCancel1);
 
         dialogSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                config.setInteger("maxLevel", config.getInteger("maxLevel-tmp"));
-                config.setBoolean("batteryFull", config.getBoolean("batteryFull-tmp"));
+                config.setInteger("max_level", config.getInteger("tmp_max_level"));
+                config.setBoolean("switch_battery_full", config.getBoolean("tmp_switch_battery_full"));
                 dialog.dismiss();
             }
         });
@@ -100,25 +100,25 @@ public class CustomDialog {
 
         final Dialog dialog = new Dialog(context);
         dialog.setContentView(R.layout.dialog_minmax);
-        dialog.setTitle("Config for USB Source");
+        dialog.setTitle("USB Options");
 
-        final TextView textMax = (TextView) dialog.findViewById(R.id.textView23);
-        final TextView textMin = (TextView) dialog.findViewById(R.id.textView25);
-        final SeekBar seekBarMax = (SeekBar) dialog.findViewById(R.id.seekBar2);
-        final SeekBar seekBarMin = (SeekBar) dialog.findViewById(R.id.seekBar3);
+        final TextView textMax = (TextView) dialog.findViewById(R.id.textMaxLevel);
+        final TextView textMin = (TextView) dialog.findViewById(R.id.textMinLevel);
+        final SeekBar seekBarMax = (SeekBar) dialog.findViewById(R.id.seekBarMaxLevel);
+        final SeekBar seekBarMin = (SeekBar) dialog.findViewById(R.id.seekBarMinLevel);
 
-        int maxValue = config.getInteger("maxUsbLevel");
+        int maxValue = config.getInteger("max_usb");
         if (maxValue == 0) {
             maxValue = config.defaultMaxLevel;
-            config.setInteger("maxUsbLevel", maxValue);
+            config.setInteger("max_usb", maxValue);
         }
-        int minValue = config.getInteger("minUsbLevel");
+        int minValue = config.getInteger("min_usb");
         if (minValue == 0) {
             minValue = config.defaultMinLevel;
-            config.setInteger("minUsbLevel", minValue);
+            config.setInteger("min_usb", minValue);
         }
-        config.setInteger("maxUsbLevel-tmp", maxValue);
-        config.setInteger("minUsbLevel-tmp", minValue);
+        config.setInteger("tmp_max_usb", maxValue);
+        config.setInteger("tmp_min_usb", minValue);
 
         seekBarMax.setMax(30);
         seekBarMax.setProgress(seekBarMaxValue - (100 - maxValue));
@@ -136,14 +136,14 @@ public class CustomDialog {
                 }
 
                 textMax.setText(Integer.toString(progress) + "%");
-                config.setInteger("maxUsbLevel-tmp", progress);
+                config.setInteger("tmp_max_usb", progress);
 
                 int minProgress = progress - 10;
                 seekBarMin.setMax(minProgress);
                 if (seekBarMin.getProgress() >= progress) {
                     seekBarMin.setProgress(minProgress);
                     textMin.setText(Integer.toString(minProgress) + "%");
-                    config.setInteger("minUsbLevel-tmp", minProgress);
+                    config.setInteger("tmp_min_usb", minProgress);
                 }
             }
 
@@ -161,7 +161,7 @@ public class CustomDialog {
                     progress = 10 + progress;
                 }
                 textMin.setText(Integer.toString(progress) + "%");
-                config.setInteger("minUsbLevel-tmp", progress);
+                config.setInteger("tmp_min_usb", progress);
             }
 
             @Override
@@ -171,31 +171,31 @@ public class CustomDialog {
             public void onStopTrackingTouch(SeekBar seekBar) {}
         });
 
-        boolean isSet = config.getBoolean("usbDisableFull");
-        Switch disableSwitch = (Switch) dialog.findViewById(R.id.switch4);
+        boolean isSet = config.getBoolean("switch_disable_usb");
+        Switch disableSwitch = (Switch) dialog.findViewById(R.id.switchDisableUsb);
         disableSwitch.setChecked(isSet);
         seekBarMax.setEnabled(!isSet);
         seekBarMin.setEnabled(!isSet);
-        config.setBoolean("usbDisableFull-tmp", isSet);
+        config.setBoolean("tmp_switch_disable_usb", isSet);
 
         disableSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                config.setBoolean("usbDisableFull-tmp", isChecked);
+                config.setBoolean("tmp_switch_disable_usb", isChecked);
                 seekBarMax.setEnabled(!isChecked);
                 seekBarMin.setEnabled(!isChecked);
             }
         });
 
-        Button dialogSave = (Button) dialog.findViewById(R.id.button3);
-        Button dialogCancel = (Button) dialog.findViewById(R.id.button4);
+        Button dialogSave = (Button) dialog.findViewById(R.id.btnSave2);
+        Button dialogCancel = (Button) dialog.findViewById(R.id.btnCancel2);
 
         dialogSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                config.setInteger("maxUsbLevel", config.getInteger("maxUsbLevel-tmp"));
-                config.setInteger("minUsbLevel", config.getInteger("minUsbLevel-tmp"));
-                config.setBoolean("usbDisableFull", config.getBoolean("usbDisableFull-tmp"));
+                config.setInteger("max_usb", config.getInteger("tmp_max_usb"));
+                config.setInteger("min_usb", config.getInteger("tmp_min_usb"));
+                config.setBoolean("switch_disable_usb", config.getBoolean("tmp_switch_disable_usb"));
                 dialog.dismiss();
             }
         });
